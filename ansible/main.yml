@@ -5,41 +5,49 @@
   become: true
 
   tasks:
-    - name: Update package cache
-      yum:
-        name: "*"
-        state: latest
+    - name: Check if Docker is installed
+      command: "docker --version"
+      ignore_errors: true
+      register: docker_installed
 
-    - name: Install required dependencies
-      yum:
-        name:
-          - yum-utils
-          - device-mapper-persistent-data
-          - lvm2
-        state: present
+    - name: Install Docker dependencies if not installed
+      block:
+        - name: Update package cache
+          yum:
+            name: "*"
+            state: latest
 
-    - name: Add Docker repository
-      shell: >
-        yum-config-manager --add-repo
-        https://download.docker.com/linux/centos/docker-ce.repo
+        - name: Install required dependencies
+          yum:
+            name:
+              - yum-utils
+              - device-mapper-persistent-data
+              - lvm2
+          state: present
 
-    - name: Install Docker
-      yum:
-        name: docker
-        state: present
+        - name: Add Docker repository
+          shell: >
+            yum-config-manager --add-repo
+            https://download.docker.com/linux/centos/docker-ce.repo
 
-    - name: Start Docker service
-      service:
-        name: docker
-        state: started
+        - name: Install Docker
+          yum:
+            name: docker
+            state: present
 
-    - name: Add user to the docker group
-      user:
-        name: "{{ ansible_ssh_user }}"
-        groups: docker
-        append: yes
+        - name: Start Docker service
+          service:
+            name: docker
+            state: started
 
-- name: Run Docker Container
+        - name: Add user to the docker group
+          user:
+            name: "{{ ansible_ssh_user }}"
+            groups: docker
+            append: yes
+      when: docker_installed.rc != 0
+
+- name: Pull and Run Docker Container
   hosts: my-ec2
   become: yes
 
