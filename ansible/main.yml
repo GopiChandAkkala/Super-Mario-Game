@@ -54,16 +54,14 @@
   tasks:
     - name: Pull Docker image
       docker_image:
-        name:  kaminskypavel/mario:latest
+        name: kaminskypavel/mario:latest
         source: pull
 
     - name: Run Docker container
       docker_container:
         name: python-app
-        image:  kaminskypavel/mario:latest
+        image: kaminskypavel/mario:latest
         state: started
         detach: yes
         ports:
           - "8080:8080"
-    
-        
