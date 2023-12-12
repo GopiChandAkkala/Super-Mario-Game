@@ -60,6 +60,14 @@ pipeline {
                 }
             }
         }
+        
+        stage('Mario Game URL') {
+            steps {
+                script {
+                        sh "echo Super Mario Game is available at http://${ec2PublicIp}:8080"
+                    }
+                }
+        }              
     }
 
 }

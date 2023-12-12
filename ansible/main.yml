@@ -57,6 +57,5 @@
         detach: yes
         ports:
           - "8080:8080"
-    - name: Mario-Game-URL
-      command: echo "Super Mario Game is available at http://{{ansible_host}}:8080" 
+    
         
