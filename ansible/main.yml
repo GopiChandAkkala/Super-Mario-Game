@@ -58,6 +58,5 @@
         ports:
           - "8080:8080"
     - name: Mario-Game-URL
-      commands:
-        shell: echo "Super Mario Game is available at http://{{ansible_host}}:8080" 
+      command: echo "Super Mario Game is available at http://{{ansible_host}}:8080" 
         
