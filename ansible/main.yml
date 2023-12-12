@@ -1,0 +1,63 @@
+---
+- name: Install Docker on Amazon Linux
+  hosts: my-ec2
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Update package cache
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Install required dependencies
+      yum:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+        state: present
+
+    - name: Add Docker repository
+      shell: >
+        yum-config-manager --add-repo
+        https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+
+    - name: Add user to the docker group
+      user:
+        name: "{{ ansible_ssh_user }}"
+        groups: docker
+        append: yes
+
+- name: Run Docker Container
+  hosts: my-ec2
+  become: yes
+
+  tasks:
+    - name: Pull Docker image
+      docker_image:
+        name:  kaminskypavel/mario:latest
+        source: pull
+
+    - name: Run Docker container
+      docker_container:
+        name: python-app
+        image:  kaminskypavel/mario:latest
+        state: started
+        detach: yes
+        ports:
+          - "8080:8080"
+    - name: Mario-Game-URL
+      commands:
+        shell: echo "Super Mario Game is available at http://{{ansible_host}}:8080" 
+        
