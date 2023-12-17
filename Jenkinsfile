@@ -15,7 +15,9 @@ pipeline {
                 dir('terraform/') {
                     script {
                         sh 'terraform init -no-color'
+                        withEnv(["TF_LOG=DEBUG"]) {
                         def tfOutput = sh(script: 'terraform apply -auto-approve', returnStdout: true).trim()
+                        }
                     }
                 }
             }
